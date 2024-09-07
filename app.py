@@ -112,23 +112,35 @@ def index():
     return render_template('index.html', user=auth.get_user(), version=__version__)
 
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Pass the error message to the error page
+    return render_template('error.html', message=str(e)), 500
+
+
 @app.route("/call_downstream_api")
 def call_downstream_api():
-    token = auth.get_token_for_user(app_config.SCOPE)
-    if "error" in token:
-        return redirect(url_for("login"))
+    try:
+        token = auth.get_token_for_user(app_config.SCOPE)
+        if "error" in token:
+            return redirect(url_for("login"))
         
-    user_data = auth.get_user()
-    print('user_data: ', user_data)
-    store_user_data(user_data)
+        user_data = auth.get_user()
+        print('user_data: ', user_data)
+        store_user_data(user_data)
+        
+        # Use access token to call downstream API
+        api_result = requests.get(
+            app_config.ENDPOINT,
+            headers={'Authorization': 'Bearer ' + token['access_token']},
+            timeout=30,
+        ).json()
 
-    # Use access token to call downstream api
-    api_result = requests.get(
-        app_config.ENDPOINT,
-        headers={'Authorization': 'Bearer ' + token['access_token']},
-        timeout=30,
-    ).json()
-    return render_template('display.html', result=api_result)
+        return render_template('display.html', result=api_result)
+    except Exception as e:
+        # Log the error for debugging and redirect to the error page
+        print(f"Error in API call: {e}")
+        return render_template('error.html', message="An error occurred while fetching data.")
 
 
 if __name__ == "__main__":
