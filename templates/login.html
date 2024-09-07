@@ -2,11 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Microsoft Identity Python Web App: Login</title>
+    <title>Microsoft Identity Python Web App: Authentication</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #00698f;
+        }
+        a {
+            text-decoration: none;
+            color: #337ab7;
+        }
+        a:hover {
+            color: #23527c;
+        }
+        h1 {
+            background-color: #00698f;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+        }
+        footer {
+            background-color: #333;
+            padding: 10px;
+            text-align: right;
+            color: #fff;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        footer a {
+            color: #fff;
+        }
+        footer a:hover {
+            color: #ccc;
+        }
+        .auth-container {
+            width: 300px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .ms-login-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2f2f2f;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .ms-login-button:hover {
+            background-color: #1f1f1f;
+        }
+        .ms-logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Microsoft Identity Python Web App</h1>
-
     {% if user_code %}
     <ol>
       <li>To sign in, type <b>{{ user_code }}</b> into
@@ -16,15 +89,13 @@
       <li>And then <a href="{{ url_for('auth_response') }}">proceed</a>.</li>
     </ol>
     {% else %}
-    <ul><li><a href='{{ auth_uri }}'>Sign In</a></li></ul>
+    <div class="auth-container">
+      <a href='{{ auth_uri }}' class="ms-login-button">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAclBMVEXz8/PzUyWBvAYFpvD/ugjz9PX19PXz+fr39fr69vPy9fp5uAAAofD/tgDz3Nji6tfzRADzTBfzmYew0oB/xfH70IDX5/P16tfz5eLo7eHzPADzlICs0Hfh6/N3wvH7znj07eEAnvDzvbPL3q6u1/L43q6vy/leAAABd0lEQVR4nO3cR1IDQRREwcb0SEgj770B7n9FNmhEBL1g8zUs8l2gIi9QKUmSpHs5vPtWFV4uANMwunUD3IyiS7+Jebgdx7bddb63uvt+dKOqIBw/xTaZNsLZc3CEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEjxVuJ7GNfwj7LQjTejcN7noTVu+z4PabgjB1wmumqm50JaAkSX/oLbxmKveiK/zqp8NxHtvx40bMn6dFbKdzgbi81MEdb8LeaRDdqiSsX2Kr541wMXiNjZCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkPCxwuj/0kvb/6V5Gd2hmTqvokulm90HluNrFyhJ0j/rC6N0RI28dGy3AAAAAElFTkSuQmCC" alt="Microsoft Logo" class="ms-logo">
+        Sign in with Microsoft
+      </a>
+    </div>
     {% endif %}
-
-    {% if config.get("B2C_RESET_PASSWORD_AUTHORITY") %}
-    <a href='{{Auth(session={}, authority=config["B2C_RESET_PASSWORD_AUTHORITY"], client_id=config["CLIENT_ID"]).log_in(redirect_uri=url_for("auth_response", _external=True))["auth_uri"]}}'>Reset Password</a>
-    {% endif %}
-
-    <hr>
-    <footer style="text-align: right">Microsoft identity platform Web App Sample {{ version }}</footer>
+    <footer>Microsoft identity platform Web App Sample</footer>
 </body>
 </html>
-
