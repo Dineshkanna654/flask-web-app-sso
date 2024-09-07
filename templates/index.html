@@ -2,7 +2,87 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Microsoft Identity Python Web App: Index</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f3f2f1;
+        }
+
+        h1, h2 {
+            color: #0078d4;
+        }
+
+        h1 {
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 15px;
+        }
+
+        a {
+            color: #0078d4;
+            text-decoration: none;
+            padding: 10px 15px;
+            background-color: #ffffff;
+            border: 1px solid #0078d4;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #0078d4;
+            color: #ffffff;
+        }
+
+        hr {
+            margin-top: 40px;
+            border: 0;
+            border-top: 1px solid #ddd;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            a {
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Microsoft Identity Python Web App</h1>
@@ -10,7 +90,7 @@
 
     <ul>
     {% if config.get("ENDPOINT") %}
-      <li><a href='/call_downstream_api'>Call a downstream API</a></li>
+      <!-- <li><a href='/call_downstream_api'>Call a downstream API</a></li> -->
     {% endif %}
 
     {% if config.get("B2C_PROFILE_AUTHORITY") %}
@@ -21,7 +101,6 @@
     </ul>
 
     <hr>
-    <footer style="text-align: right">Microsoft identity platform Web App Sample {{ version }}</footer>
+    <footer>Microsoft identity platform Web App Sample {{ version }}</footer>
 </body>
 </html>
-
