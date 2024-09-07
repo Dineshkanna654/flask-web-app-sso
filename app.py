@@ -2,6 +2,10 @@ import identity.web
 import requests
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_session import Session
+import mysql.connector
+from mysql.connector import Error
+import os
+from datetime import datetime
 
 import app_config
 
@@ -26,6 +30,53 @@ auth = identity.web.Auth(
     client_id=app.config["CLIENT_ID"],
     client_credential=app.config["CLIENT_SECRET"],
 )
+
+DB_CONFIG = {
+    'host': app.config["DB_HOST"],
+    'database': app.config["DB_NAME"],
+    'user': app.config["DB_USER"],
+    'password': app.config["DB_PASSWORD"],
+}
+
+def create_db_connection():
+    try:
+        connection = mysql.connector.connect(**DB_CONFIG)
+        if connection.is_connected():
+            return connection
+    except Error as e:
+        print(f"Error while connecting to MySQL: {e}")
+    return None
+
+
+def store_user_data(user_data):
+    connection = create_db_connection()
+    if connection is None:
+        return
+
+    try:
+        cursor = connection.cursor()
+        query = """INSERT INTO user_logins 
+                   (oid, name, preferred_username, aud, iss, iat, exp, tid, access_time) 
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        values = (
+            user_data.get('oid'),
+            user_data.get('name'),
+            user_data.get('preferred_username'),
+            user_data.get('aud'),
+            user_data.get('iss'),
+            datetime.fromtimestamp(user_data.get('iat', 0)),
+            datetime.fromtimestamp(user_data.get('exp', 0)),
+            user_data.get('tid'),
+            datetime.now()
+        )
+        cursor.execute(query, values)
+        connection.commit()
+    except Error as e:
+        print(f"Error while storing user data: {e}")
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
 
 
 @app.route("/login")
@@ -66,6 +117,11 @@ def call_downstream_api():
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
+        
+    user_data = auth.get_user()
+    print('user_data: ', user_data)
+    store_user_data(user_data)
+
     # Use access token to call downstream api
     api_result = requests.get(
         app_config.ENDPOINT,
