@@ -9,7 +9,7 @@ from datetime import datetime
 
 import app_config
 
-__version__ = "0.8.0"  # The version of this sample, for troubleshooting purpose
+__version__ = "0.8.0" 
 
 app = Flask(__name__)
 app.config.from_object(app_config)
@@ -17,9 +17,6 @@ assert app.config["REDIRECT_PATH"] != "/", "REDIRECT_PATH must not be /"
 Session(app)
 
 # This section is needed for url_for("foo", _external=True) to automatically
-# generate http scheme when this sample is running on localhost,
-# and to generate https scheme when it is deployed behind reversed proxy.
-# See also https://flask.palletsprojects.com/en/2.2.x/deploying/proxy_fix/
 from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
@@ -83,11 +80,12 @@ def store_user_data(user_data):
 def login():
     return render_template("login.html", version=__version__, **auth.log_in(
         scopes=app_config.SCOPE, # Have user consent to scopes during log-in
-        redirect_uri=url_for("auth_response", _external=True), # Optional. If present, this absolute URL must match your app's redirect_uri registered in Azure Portal
-        prompt="select_account",  # Optional. More values defined in  https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+        redirect_uri=url_for("auth_response", _external=True), 
+        prompt="select_account",  
         ))
 
 
+# error may raise
 @app.route(app_config.REDIRECT_PATH)
 def auth_response():
     result = auth.complete_log_in(request.args)
@@ -96,11 +94,13 @@ def auth_response():
     return redirect(url_for("index"))
 
 
+# log out api
 @app.route("/logout")
 def logout():
     return redirect(auth.log_out(url_for("index", _external=True)))
 
 
+# index page 
 @app.route("/")
 def index():
     if not (app.config["CLIENT_ID"] and app.config["CLIENT_SECRET"]):
@@ -112,12 +112,14 @@ def index():
     return render_template('index.html', user=auth.get_user(), version=__version__)
 
 
+
 @app.errorhandler(Exception)
 def handle_exception(e):
     # Pass the error message to the error page
     return render_template('error.html', message=str(e)), 500
 
 
+# call downstream api (for user data storeDB )
 @app.route("/call_downstream_api")
 def call_downstream_api():
     try:
